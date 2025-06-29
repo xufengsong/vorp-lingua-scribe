@@ -17,6 +17,7 @@ const languages = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
   { code: "ko", name: "Korean", flag: "🇰🇷" },
   { code: "zh", name: "Chinese", flag: "🇨🇳" },
+  { code: "ru", name: "Russian", flag: "🇷🇺"},
 ];
 
 const fluencyLevels = [
@@ -30,9 +31,10 @@ const fluencyLevels = [
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
-    password: "",
-    confirmPassword: "",
+    password1: "",
+    password2: "",
     motherLanguage: "",
     targetLanguage: "",
     fluencyLevel: ""
@@ -44,7 +46,7 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.email || !formData.password || !formData.confirmPassword || 
+    if (!formData.username || !formData.email || !formData.password1 || !formData.password2 || 
         !formData.motherLanguage || !formData.targetLanguage || !formData.fluencyLevel) {
       toast({
         title: "Missing Information",
@@ -54,7 +56,7 @@ const SignUp = () => {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password1 !== formData.password2) {
       toast({
         title: "Password Mismatch",
         description: "Passwords do not match.",
@@ -63,7 +65,7 @@ const SignUp = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password1.length < 6) {
       toast({
         title: "Password Too Short",
         description: "Password must be at least 6 characters.",
@@ -73,16 +75,39 @@ const SignUp = () => {
     }
 
     setIsLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Success:", data);
+        navigate("/login")
+      } else {
+        console.error("Error:", data);
+      }
+    } catch (error) {
+      console.error('There was an error sending the request!', error);
+    } finally {
+      setIsLoading(false);
+    }
     
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Welcome to VORP!",
-        description: "Your account has been created successfully.",
-      });
-      navigate("/dashboard");
-    }, 1500);
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    //   toast({
+    //     title: "Welcome to VORP!",
+    //     description: "Your account has been created successfully.",
+    //   });
+    //   navigate("/dashboard");
+    // }, 1500);
   };
 
   return (
@@ -95,6 +120,21 @@ const SignUp = () => {
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                Name
+              </Label>
+              <Input
+                id="name"
+                type="name"
+                value={formData.username}
+                onChange={(e) => setFormData({...formData, username: e.target.value})}
+                className="rounded-xl border-gray-300 focus:border-cyan-500 focus:ring-cyan-500"
+                placeholder="Enter your name"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email
@@ -110,28 +150,28 @@ const SignUp = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password1" className="text-sm font-medium text-gray-700">
                 Password
               </Label>
               <Input
                 id="password"
                 type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                value={formData.password1}
+                onChange={(e) => setFormData({...formData, password1: e.target.value})}
                 className="rounded-xl border-gray-300 focus:border-cyan-500 focus:ring-cyan-500"
                 placeholder="Create a password"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password2" className="text-sm font-medium text-gray-700">
                 Confirm Password
               </Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                value={formData.password2}
+                onChange={(e) => setFormData({...formData, password2: e.target.value})}
                 className="rounded-xl border-gray-300 focus:border-cyan-500 focus:ring-cyan-500"
                 placeholder="Confirm your password"
               />
