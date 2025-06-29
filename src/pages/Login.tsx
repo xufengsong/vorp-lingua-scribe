@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,48 +28,43 @@ const Login = () => {
     const login_info = {"email": email, "password": password};
 
     try {
-          const response = await fetch('http://127.0.0.1:8000/api/login/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(login_info),
-          });
+      const response = await fetch('http://127.0.0.1:8000/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(login_info),
+      });
 
-          const data = await response.json();
+      const data = await response.json();
 
-          if (response.ok) {
-            console.log("Success:", data);
-            // You can add a success toast here
-            toast({
-              title: "Welcome to VORP!",
-              description: "You've successfully logged in.",
-            });
-            navigate("/dashboard");
-            
-          } else {
-            console.error("Error:", data);
-            // You can add an error toast here
-          }
-        } catch (error) {
-          console.error('There was an error sending the request!', error);
-        } finally {
-          setIsLoading(false);
-        }
+      if (response.ok) {
+        console.log("Success:", data);
+        toast({
+          title: "Welcome to VORP!",
+          description: "You've successfully logged in.",
+        });
+        navigate("/dashboard");
+        
+      } else {
+        console.error("Error:", data);
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password.",
+          variant: "destructive",
+        });
       }
-
-    // setIsLoading(true);
-    
-  //   // Simulate login
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //     toast({
-  //       title: "Welcome to VORP!",
-  //       description: "You've successfully logged in.",
-  //     });
-  //     navigate("/dashboard");
-  //   }, 1500);
-  // };
+    } catch (error) {
+      console.error('There was an error sending the request!', error);
+      toast({
+        title: "Connection Error",
+        description: "Unable to connect to server.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
@@ -128,9 +123,9 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <button className="text-cyan-600 hover:text-cyan-700 font-medium">
+              <Link to="/signup" className="text-cyan-600 hover:text-cyan-700 font-medium">
                 Sign up
-              </button>
+              </Link>
             </p>
           </div>
         </div>
