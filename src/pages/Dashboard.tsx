@@ -8,12 +8,40 @@ import { Textarea } from "@/components/ui/textarea";
 const Dashboard = () => {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const pl = "i am new"
   const handleSubmit = async () => {
     if (!content.trim()) return;
     
     setIsLoading(true);
+
     // Simulate processing
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/analyze/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Success:", data);
+        // You can now access the analysis results!
+        console.log("Translation List:", data.analysis);
+        // You can add a success toast here
+        
+      } else {
+        console.error("Error:", data);
+        // You can add an error toast here
+      }
+    } catch (error) {
+      console.error('There was an error sending the request!', error);
+    } finally {
+      setIsLoading(false);
+    }
+    
     setTimeout(() => {
       setIsLoading(false);
       console.log("Content submitted:", content);
@@ -62,12 +90,22 @@ const Dashboard = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto">
           <div className="space-y-6">
             <div>
-              <Textarea
-                placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
-              />
+              {isLoading ? (
+                <Textarea
+                  // placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
+                  value={pl}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
+                />
+              ) : (
+                <Textarea
+                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
+                />
+              )}
+              
             </div>
             
             <Button

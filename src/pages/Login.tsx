@@ -25,18 +25,51 @@ const Login = () => {
       return;
     }
 
-    setIsLoading(true);
+    const login_info = {"email": email, "password": password};
+
+    try {
+          const response = await fetch('http://127.0.0.1:8000/api/login/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(login_info),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            console.log("Success:", data);
+            // You can add a success toast here
+            toast({
+              title: "Welcome to VORP!",
+              description: "You've successfully logged in.",
+            });
+            navigate("/dashboard");
+            
+          } else {
+            console.error("Error:", data);
+            // You can add an error toast here
+          }
+        } catch (error) {
+          console.error('There was an error sending the request!', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+    // setIsLoading(true);
     
-    // Simulate login
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Welcome to VORP!",
-        description: "You've successfully logged in.",
-      });
-      navigate("/dashboard");
-    }, 1500);
-  };
+  //   // Simulate login
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     toast({
+  //       title: "Welcome to VORP!",
+  //       description: "You've successfully logged in.",
+  //     });
+  //     navigate("/dashboard");
+  //   }, 1500);
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">
