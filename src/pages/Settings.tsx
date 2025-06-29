@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Home, Settings as SettingsIcon, User, LogOut, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,75 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContest";
 
 const Settings = () => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
   const [profileData, setProfileData] = useState({
-    username: "john_learner",
-    email: "john@example.com",
+    username: user?.username || "",
+    email: user?.email || "",
     profilePicture: null as File | null
   });
+
+  // Fetch user profile data when the component mounts
+  // useEffect(() => {
+  //   const fetchProfileData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       // You'll likely need to send a token for authentication
+  //       const token = localStorage.getItem('authToken'); // Example: get token from local storage
+  //       if (!token) {
+  //         navigate("/login");
+  //         return;
+  //       }
+
+  //       const response = await fetch('http://127.0.0.1:8000/api/user_profile_view/', {
+  //         method: 'GET', // Typically, you use GET to retrieve data
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${token}`, // Send the token for authentication
+  //         },
+  //       });
+
+  //       const data = await response.json();
+
+  //       if (response.ok) {
+  //         console.log("Success:", data);
+  //         setProfileData({
+  //           ...profileData,
+  //           username: data.username,
+  //           email: data.email,
+  //         });
+  //       } else {
+  //         console.error("Error:", data);
+  //         // Handle error, e.g., show a toast message
+  //         toast({
+  //           title: "Error",
+  //           description: "Failed to fetch profile data.",
+  //           variant: "destructive",
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error('There was an error sending the request!', error);
+  //       toast({
+  //           title: "Error",
+  //           description: "An unexpected error occurred.",
+  //           variant: "destructive",
+  //       });
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchProfileData();
+  // }, [navigate, toast]); // Dependencies for the useEffect hook
+
+
+
 
   // Mock learning data
   const learningStats = {
@@ -64,13 +123,23 @@ const Settings = () => {
     }
   };
 
+  if (!user) {
+    return <div>Loading...</div>;}
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
+            <Link
+              to="/dashboard"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600"
+              title="Dashboard"
+            >
+              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
+            </Link>
           </div>
           
           <div className="flex items-center space-x-4">

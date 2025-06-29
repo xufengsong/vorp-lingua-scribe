@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import Pricing from "./pages/Pricing";
 import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ui/ProtectedRoute"
 
 const queryClient = new QueryClient();
 
@@ -19,18 +20,22 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      {/* <BrowserRouter> */}
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/payment" element={<Payment />} />
+          </Route>
+
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/payment" element={<Payment />} />
           <Route path="/" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+      {/* </BrowserRouter> */}
     </TooltipProvider>
   </QueryClientProvider>
 );

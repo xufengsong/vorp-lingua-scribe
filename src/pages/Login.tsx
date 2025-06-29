@@ -5,65 +5,67 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContest";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  // const [isLoading, setIsLoading] = useState(false);
+  // const navigate = useNavigate();
+  // const { toast } = useToast();
+  const { login, isLoading } = useAuth(); // Use the context
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both email and password.",
-        variant: "destructive",
-      });
-      return;
-    }
+    await login({ email, password });
+    // if (!email || !password) {
+    //   toast({
+    //     title: "Missing Information",
+    //     description: "Please enter both email and password.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
-    const login_info = {"email": email, "password": password};
+    // const login_info = {"email": email, "password": password};
 
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(login_info),
-      });
+    // try {
+    //   const response = await fetch('http://127.0.0.1:8000/api/login/', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(login_info),
+    //   });
 
-      const data = await response.json();
+    //   const data = await response.json();
 
-      if (response.ok) {
-        console.log("Success:", data);
-        toast({
-          title: "Welcome to VORP!",
-          description: "You've successfully logged in.",
-        });
-        navigate("/dashboard");
+    //   if (response.ok) {
+    //     console.log("Success:", data);
+    //     toast({
+    //       title: "Welcome to VORP!",
+    //       description: "You've successfully logged in.",
+    //     });
+    //     navigate("/dashboard");
         
-      } else {
-        console.error("Error:", data);
-        toast({
-          title: "Login Failed",
-          description: "Invalid email or password.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('There was an error sending the request!', error);
-      toast({
-        title: "Connection Error",
-        description: "Unable to connect to server.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    //   } else {
+    //     console.error("Error:", data);
+    //     toast({
+    //       title: "Login Failed",
+    //       description: "Invalid email or password.",
+    //       variant: "destructive",
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error('There was an error sending the request!', error);
+    //   toast({
+    //     title: "Connection Error",
+    //     description: "Unable to connect to server.",
+    //     variant: "destructive",
+    //   });
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
