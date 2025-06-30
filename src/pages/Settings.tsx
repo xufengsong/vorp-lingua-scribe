@@ -103,13 +103,14 @@ const Settings = () => {
     }, 1000);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
     // Simulate logout
-    setTimeout(() => navigate("/login"), 1000);
+    await logout();
+    // setTimeout(() => navigate("/login"), 1000);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +125,16 @@ const Settings = () => {
   };
 
   if (!user) {
-    return <div>Loading...</div>;}
+    // return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 border-2 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-gray-600">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
 
   return (
@@ -359,3 +369,5 @@ const Settings = () => {
 };
 
 export default Settings;
+
+// https://vorp.onrender.com/vocabulary-test/

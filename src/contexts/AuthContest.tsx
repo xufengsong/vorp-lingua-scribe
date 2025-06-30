@@ -7,11 +7,10 @@ interface User {
   username: string;
   email: string;
   // Add any other fields you get from your API
-  kownwords: string[];
-  password: string;
-  motherLanguage: string,
-  targetLanguage: string,
-  fluncyLevel: string,
+  kownwords?: string[];
+  motherLanguage?: string,
+  targetLanguage?: string,
+  fluncyLevel?: string,
 }
 
 // Define what the context will provide
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // We directly call the profile view. If the user has a valid sessionid cookie,
         // this request will succeed and return the user's data.
         const response = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
-          {credentials: 'include'},
+          {method: 'GET', credentials: 'include'},
         );
 
         if (response.ok) {
@@ -83,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Step 2: Since login was successful, immediately fetch the user's full profile data.
       const profileResponse = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
-        {credentials: 'include'}
+        {method: 'GET', credentials: 'include'}
       );
       if (profileResponse.ok) {
         const userData = await profileResponse.json();

@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContest"
 
 const Dashboard = () => {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const { logout } = useAuth();
   // Mock recommended content
   const recommendedContent = [
     {
@@ -61,6 +62,10 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -98,13 +103,20 @@ const Dashboard = () => {
             >
               <Settings size={20} />
             </Link>
-            <Link
+            {/* <Link
               to="/login"
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-600 hover:text-red-600"
               title="Logout"
             >
               <LogOut size={20} />
-            </Link>
+            </Link> */}
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="rounded-xl"
+            >
+              <LogOut size={20} />
+            </Button>
           </div>
         </div>
       </header>
