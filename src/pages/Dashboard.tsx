@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { logout } = useAuth();
+  
   // Mock recommended content
   const recommendedContent = [
     {
