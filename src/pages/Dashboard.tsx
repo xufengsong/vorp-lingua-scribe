@@ -32,6 +32,64 @@ const Dashboard = () => {
   const [showWordPanel, setShowWordPanel] = useState(false);
   const { logout } = useAuth();
   
+  // Mock Chinese poem analysis data
+  const mockChineseAnalysis: { [key: string]: WordAnalysis } = {
+    "风": { word: "风", meaning: "wind", partOfSpeech: "noun" },
+    "急": { word: "急", meaning: "urgent, swift", partOfSpeech: "adjective" },
+    "天": { word: "天", meaning: "sky, heaven", partOfSpeech: "noun" },
+    "高": { word: "高", meaning: "high, tall", partOfSpeech: "adjective" },
+    "猿": { word: "猿", meaning: "ape, monkey", partOfSpeech: "noun" },
+    "啸": { word: "啸", meaning: "to howl, whistle", partOfSpeech: "verb" },
+    "哀": { word: "哀", meaning: "sorrow, grief", partOfSpeech: "adjective" },
+    "渚": { word: "渚", meaning: "small island, sandbar", partOfSpeech: "noun" },
+    "清": { word: "清", meaning: "clear, pure", partOfSpeech: "adjective" },
+    "沙": { word: "沙", meaning: "sand", partOfSpeech: "noun" },
+    "白": { word: "白", meaning: "white", partOfSpeech: "adjective" },
+    "鸟": { word: "鸟", meaning: "bird", partOfSpeech: "noun" },
+    "飞": { word: "飞", meaning: "to fly", partOfSpeech: "verb" },
+    "回": { word: "回", meaning: "to return", partOfSpeech: "verb" },
+    "无": { word: "无", meaning: "without, no", partOfSpeech: "adverb" },
+    "边": { word: "边", meaning: "edge, border", partOfSpeech: "noun" },
+    "落": { word: "落", meaning: "to fall, drop", partOfSpeech: "verb" },
+    "木": { word: "木", meaning: "tree, wood", partOfSpeech: "noun" },
+    "萧": { word: "萧", meaning: "desolate sound", partOfSpeech: "adjective" },
+    "下": { word: "下", meaning: "down, below", partOfSpeech: "direction" },
+    "不": { word: "不", meaning: "not", partOfSpeech: "adverb" },
+    "尽": { word: "尽", meaning: "endless, all", partOfSpeech: "adjective" },
+    "长": { word: "长", meaning: "long", partOfSpeech: "adjective" },
+    "江": { word: "江", meaning: "river", partOfSpeech: "noun" },
+    "滚": { word: "滚", meaning: "to roll", partOfSpeech: "verb" },
+    "来": { word: "来", meaning: "to come", partOfSpeech: "verb" },
+    "万": { word: "万", meaning: "ten thousand", partOfSpeech: "number" },
+    "里": { word: "里", meaning: "mile, distance", partOfSpeech: "noun" },
+    "悲": { word: "悲", meaning: "sad, grief", partOfSpeech: "adjective" },
+    "秋": { word: "秋", meaning: "autumn", partOfSpeech: "noun" },
+    "常": { word: "常", meaning: "often, always", partOfSpeech: "adverb" },
+    "作": { word: "作", meaning: "to be, act as", partOfSpeech: "verb" },
+    "客": { word: "客", meaning: "guest, traveler", partOfSpeech: "noun" },
+    "百": { word: "百", meaning: "hundred", partOfSpeech: "number" },
+    "年": { word: "年", meaning: "year", partOfSpeech: "noun" },
+    "多": { word: "多", meaning: "many, much", partOfSpeech: "adjective" },
+    "病": { word: "病", meaning: "illness, sick", partOfSpeech: "noun" },
+    "独": { word: "独", meaning: "alone", partOfSpeech: "adverb" },
+    "登": { word: "登", meaning: "to climb, ascend", partOfSpeech: "verb" },
+    "台": { word: "台", meaning: "platform, terrace", partOfSpeech: "noun" },
+    "艰": { word: "艰", meaning: "difficult", partOfSpeech: "adjective" },
+    "难": { word: "难", meaning: "difficult", partOfSpeech: "adjective" },
+    "苦": { word: "苦", meaning: "bitter, suffering", partOfSpeech: "adjective" },
+    "恨": { word: "恨", meaning: "hate, regret", partOfSpeech: "verb" },
+    "繁": { word: "繁", meaning: "numerous, dense", partOfSpeech: "adjective" },
+    "霜": { word: "霜", meaning: "frost", partOfSpeech: "noun" },
+    "鬓": { word: "鬓", meaning: "temples (hair)", partOfSpeech: "noun" },
+    "潦": { word: "潦", meaning: "down and out", partOfSpeech: "adjective" },
+    "倒": { word: "倒", meaning: "fallen, dejected", partOfSpeech: "adjective" },
+    "新": { word: "新", meaning: "new, recent", partOfSpeech: "adjective" },
+    "停": { word: "停", meaning: "to stop", partOfSpeech: "verb" },
+    "浊": { word: "浊", meaning: "muddy, turbid", partOfSpeech: "adjective" },
+    "酒": { word: "酒", meaning: "wine, alcohol", partOfSpeech: "noun" },
+    "杯": { word: "杯", meaning: "cup", partOfSpeech: "noun" }
+  };
+  
   // Mock recommended content
   const recommendedContent = [
     {
@@ -60,6 +118,30 @@ const Dashboard = () => {
     setIsLoading(true);
 
     try {
+      // Check if input is the Chinese poem for mock demonstration
+      const isChinesePoem = content.includes("风急天高猿啸哀") || content.includes("渚清沙白鸟飞回");
+      
+      if (isChinesePoem) {
+        // Mock Chinese analysis
+        const chineseText = `风急天高猿啸哀，渚清沙白鸟飞回。
+无边落木萧萧下，不尽长江滚滚来。
+万里悲秋常作客，百年多病独登台。
+艰难苦恨繁霜鬓，潦倒新停浊酒杯。`;
+        
+        setAnalysisResult(chineseText);
+        
+        // Extract Chinese characters for analysis
+        const chineseAnalysis: WordAnalysis[] = [];
+        for (const char of chineseText) {
+          if (mockChineseAnalysis[char]) {
+            chineseAnalysis.push(mockChineseAnalysis[char]);
+          }
+        }
+        setWordAnalysis(chineseAnalysis);
+        setIsLoading(false);
+        return;
+      }
+
       const response = await fetch('http://127.0.0.1:8000/api/analyze/', {
         method: 'POST',
         headers: {
@@ -126,6 +208,64 @@ const Dashboard = () => {
   const renderAnalyzedText = () => {
     if (!analysisResult) return null;
 
+    // Handle Chinese text differently
+    const isChinese = /[\u4e00-\u9fff]/.test(analysisResult);
+    
+    if (isChinese) {
+      return (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result - Chinese Poem</h3>
+          <div className="text-lg leading-relaxed font-serif">
+            <TooltipProvider>
+              {analysisResult.split('').map((char, index) => {
+                const wordData = mockChineseAnalysis[char];
+                
+                if (!wordData || /[\s，。\n]/.test(char)) {
+                  return <span key={index} className={char === '\n' ? 'block' : ''}>{char === '\n' ? '' : char}</span>;
+                }
+
+                return (
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="cursor-pointer hover:bg-yellow-100 hover:underline rounded px-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-yellow-100"
+                        onClick={() => handleWordClick(wordData)}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            handleWordClick(wordData);
+                          }
+                        }}
+                        role="button"
+                        aria-label={`Click to pin translation for ${wordData.word}`}
+                      >
+                        {char}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <div className="text-sm">
+                        <div className="font-semibold">{wordData.word}</div>
+                        <div className="text-gray-600">{wordData.meaning}</div>
+                        {wordData.partOfSpeech && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            {wordData.partOfSpeech}
+                          </div>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </TooltipProvider>
+          </div>
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+            <strong>Poem Translation:</strong> This is Du Fu's famous poem "Ascending the Heights" (登高), expressing the poet's feelings of loneliness and hardship while traveling far from home in autumn.
+          </div>
+        </div>
+      );
+    }
+
+    // Regular text analysis (existing code)
     const words = analysisResult.split(/(\s+)/);
     
     return (
@@ -249,7 +389,7 @@ const Dashboard = () => {
             <div className="space-y-6">
               <div>
                 <Textarea
-                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
+                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning. Try the Chinese poem: 风急天高猿啸哀，渚清沙白鸟飞回。"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
@@ -272,7 +412,7 @@ const Dashboard = () => {
               </Button>
               
               <p className="text-sm text-gray-500 text-center">
-                We support plain text, news articles, and YouTube links.
+                We support plain text, news articles, and YouTube links. Try the Chinese poem demo!
               </p>
             </div>
           </div>
@@ -345,7 +485,7 @@ const Dashboard = () => {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900 mb-1">
+                        <div className="font-semibold text-gray-900 mb-1 text-lg">
                           {translation.word}
                         </div>
                         <div className="text-gray-600 text-sm mb-2">
