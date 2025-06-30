@@ -1,15 +1,35 @@
 
 import { useState } from "react";
-import { Home, Settings, DollarSign, LogOut } from "lucide-react";
+import { Home, Settings, DollarSign, LogOut, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContest"
+
+interface WordAnalysis {
+  word: string;
+  meaning: string;
+  baseForm?: string;
+  partOfSpeech?: string;
+}
+
+interface PinnedTranslation {
+  id: string;
+  word: string;
+  meaning: string;
+  baseForm?: string;
+  partOfSpeech?: string;
+}
 
 const Dashboard = () => {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string>("");
+  const [wordAnalysis, setWordAnalysis] = useState<WordAnalysis[]>([]);
+  const [pinnedTranslations, setPinnedTranslations] = useState<PinnedTranslation[]>([]);
+  const [showWordPanel, setShowWordPanel] = useState(false);
   const { logout } = useAuth();
   
   // Mock recommended content
@@ -53,14 +73,110 @@ const Dashboard = () => {
       if (response.ok) {
         console.log("Success:", data);
         console.log("Translation List:", data.analysis);
+        
+        // Mock analysis result for demonstration
+        setAnalysisResult(content);
+        const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
+          word: word.replace(/[^\w]/g, ''),
+          meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
+          baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
+          partOfSpeech: "noun"
+        })).filter(item => item.word.length > 0);
+        setWordAnalysis(mockAnalysis);
       } else {
         console.error("Error:", data);
       }
     } catch (error) {
       console.error('There was an error sending the request!', error);
+      // Mock analysis for demo when backend is not available
+      setAnalysisResult(content);
+      const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
+        word: word.replace(/[^\w]/g, ''),
+        meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
+        baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
+        partOfSpeech: "noun"
+      })).filter(item => item.word.length > 0);
+      setWordAnalysis(mockAnalysis);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWordClick = (wordData: WordAnalysis) => {
+    const newPinned: PinnedTranslation = {
+      id: `${wordData.word}-${Date.now()}`,
+      ...wordData
+    };
+    
+    setPinnedTranslations(prev => {
+      const exists = prev.find(item => item.word === wordData.word);
+      if (exists) return prev;
+      return [...prev, newPinned];
+    });
+    setShowWordPanel(true);
+  };
+
+  const removePinnedTranslation = (id: string) => {
+    setPinnedTranslations(prev => prev.filter(item => item.id !== id));
+    if (pinnedTranslations.length <= 1) {
+      setShowWordPanel(false);
+    }
+  };
+
+  const renderAnalyzedText = () => {
+    if (!analysisResult) return null;
+
+    const words = analysisResult.split(/(\s+)/);
+    
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
+        <div className="text-base leading-relaxed">
+          <TooltipProvider>
+            {words.map((segment, index) => {
+              const cleanWord = segment.replace(/[^\w]/g, '');
+              const wordData = wordAnalysis.find(w => w.word === cleanWord);
+              
+              if (!wordData || segment.trim() === '') {
+                return <span key={index}>{segment}</span>;
+              }
+
+              return (
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <span
+                      className="cursor-pointer hover:bg-cyan-100 hover:underline rounded px-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-cyan-100"
+                      onClick={() => handleWordClick(wordData)}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          handleWordClick(wordData);
+                        }
+                      }}
+                      role="button"
+                      aria-label={`Click to pin translation for ${wordData.word}`}
+                    >
+                      {segment}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <div className="text-sm">
+                      <div className="font-semibold">{wordData.word}</div>
+                      <div className="text-gray-600">{wordData.meaning}</div>
+                      {wordData.baseForm && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Base: {wordData.baseForm}
+                        </div>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </TooltipProvider>
+        </div>
+      </div>
+    );
   };
 
   const handleLogout = async () => {
@@ -104,13 +220,6 @@ const Dashboard = () => {
             >
               <Settings size={20} />
             </Link>
-            {/* <Link
-              to="/login"
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-600 hover:text-red-600"
-              title="Logout"
-            >
-              <LogOut size={20} />
-            </Link> */}
             <Button
               onClick={handleLogout}
               variant="destructive"
@@ -123,88 +232,157 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        {/* Content Analysis Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-light text-gray-900 mb-4">
-            Analyze Content for Language Learning
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Transform any content into personalized language learning material
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto mb-12">
-          <div className="space-y-6">
-            <div>
-              <Textarea
-                placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
-              />
-            </div>
-            
-            <Button
-              onClick={handleSubmit}
-              disabled={!content.trim() || isLoading}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl py-3 text-base font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Analyzing...</span>
-                </div>
-              ) : (
-                "Analyze Content"
-              )}
-            </Button>
-            
-            <p className="text-sm text-gray-500 text-center">
-              We support plain text, news articles, and YouTube links.
-            </p>
-          </div>
-        </div>
-
-        {/* Recommended Content Section */}
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-light text-gray-900 mb-2">
-              Recommended Learning Content
-            </h3>
-            <p className="text-gray-600">
-              Curated content tailored to your learning level
+      <main className="flex max-w-7xl mx-auto px-6 py-12 gap-6">
+        {/* Main Content Area */}
+        <div className={`flex-1 transition-all duration-300 ${showWordPanel ? 'mr-80' : ''}`}>
+          {/* Content Analysis Section */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-light text-gray-900 mb-4">
+              Analyze Content for Language Learning
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Transform any content into personalized language learning material
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {recommendedContent.map((item, index) => (
-              <Card key={index} className="rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      item.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
-                      item.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {item.difficulty}
-                    </span>
-                    <span className="text-sm text-gray-500">{item.duration}</span>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto mb-12">
+            <div className="space-y-6">
+              <div>
+                <Textarea
+                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
+                />
+              </div>
+              
+              <Button
+                onClick={handleSubmit}
+                disabled={!content.trim() || isLoading}
+                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl py-3 text-base font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Analyzing...</span>
                   </div>
-                  <CardTitle className="text-lg text-gray-900">{item.title}</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    {item.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" size="sm" className="w-full rounded-lg">
-                    Start Learning
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                ) : (
+                  "Analyze"
+                )}
+              </Button>
+              
+              <p className="text-sm text-gray-500 text-center">
+                We support plain text, news articles, and YouTube links.
+              </p>
+            </div>
+          </div>
+
+          {/* Analysis Result */}
+          {renderAnalyzedText()}
+
+          {/* Recommended Content Section */}
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-light text-gray-900 mb-2">
+                Recommended Learning Content
+              </h3>
+              <p className="text-gray-600">
+                Curated content tailored to your learning level
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {recommendedContent.map((item, index) => (
+                <Card key={index} className="rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        item.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
+                        item.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {item.difficulty}
+                      </span>
+                      <span className="text-sm text-gray-500">{item.duration}</span>
+                    </div>
+                    <CardTitle className="text-lg text-gray-900">{item.title}</CardTitle>
+                    <CardDescription className="text-gray-600">
+                      {item.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button variant="outline" size="sm" className="w-full rounded-lg">
+                      Start Learning
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* Word Meaning Panel - Right Sidebar */}
+        {showWordPanel && (
+          <div className="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 shadow-lg z-40 overflow-y-auto animate-slide-in-right">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Word Meanings</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowWordPanel(false)}
+                  className="p-1 h-8 w-8"
+                >
+                  <X size={16} />
+                </Button>
+              </div>
+              
+              <div className="space-y-4">
+                {pinnedTranslations.map((translation) => (
+                  <div
+                    key={translation.id}
+                    className="bg-gray-50 rounded-lg p-4 border border-gray-200 animate-fade-in"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-900 mb-1">
+                          {translation.word}
+                        </div>
+                        <div className="text-gray-600 text-sm mb-2">
+                          {translation.meaning}
+                        </div>
+                        {translation.baseForm && (
+                          <div className="text-xs text-gray-500">
+                            Base form: {translation.baseForm}
+                          </div>
+                        )}
+                        {translation.partOfSpeech && (
+                          <div className="text-xs text-gray-500">
+                            Part of speech: {translation.partOfSpeech}
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removePinnedTranslation(translation.id)}
+                        className="p-1 h-6 w-6 ml-2 flex-shrink-0"
+                      >
+                        <X size={12} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                
+                {pinnedTranslations.length === 0 && (
+                  <div className="text-center text-gray-500 py-8">
+                    <p>Click on words in the analyzed text to pin their translations here.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
