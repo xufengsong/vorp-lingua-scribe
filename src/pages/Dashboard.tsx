@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Home, Settings, DollarSign, LogOut, X } from "lucide-react";
+import { Home, Settings, DollarSign, LogOut, X, Expand, Minimize } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,6 +29,7 @@ const Dashboard = () => {
   const [wordAnalysis, setWordAnalysis] = useState<WordAnalysis[]>([]);
   const [pinnedTranslations, setPinnedTranslations] = useState<PinnedTranslation[]>([]);
   const [showWordPanel, setShowWordPanel] = useState(false);
+  const [isTextareaExpanded, setIsTextareaExpanded] = useState(false);
   const { logout } = useAuth();
   
   // Mock Chinese poem analysis data
@@ -213,7 +213,7 @@ const Dashboard = () => {
     
     if (isChinese) {
       return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="w-full bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
           <div className="text-lg leading-relaxed font-serif">
             <TooltipProvider>
@@ -269,7 +269,7 @@ const Dashboard = () => {
     const words = analysisResult.split(/(\s+)/);
     
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="w-full bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
         <div className="text-base leading-relaxed">
           <TooltipProvider>
@@ -385,40 +385,73 @@ const Dashboard = () => {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 max-w-2xl mx-auto mb-12">
-            <div className="space-y-6">
-              <div>
-                <Textarea
-                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
-                />
-              </div>
-              
-              <Button
-                onClick={handleSubmit}
-                disabled={!content.trim() || isLoading}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl py-3 text-base font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Analyzing...</span>
-                  </div>
-                ) : (
-                  "Analyze"
-                )}
-              </Button>
-              
-              <p className="text-sm text-gray-500 text-center">
-                We support plain text, news articles, and YouTube links.
-              </p>
-            </div>
-          </div>
+          <div className="w-full max-w-4xl mx-auto mb-12">
+            {/* Input Section with Consistent Width */}
+            <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
+              <div className="space-y-4">
+                <div className="relative">
+                  <Textarea
+                    placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className={`w-full resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base transition-all duration-300 ${
+                      isTextareaExpanded 
+                        ? 'min-h-[400px] max-h-[800px]' 
+                        : 'min-h-[200px] max-h-[200px]'
+                    }`}
+                    style={{
+                      height: isTextareaExpanded ? 'auto' : '200px'
+                    }}
+                  />
+                </div>
+                
+                {/* Expand/Collapse Toggle */}
+                <div className="flex items-center justify-between">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsTextareaExpanded(!isTextareaExpanded)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-cyan-600 transition-colors duration-200"
+                  >
+                    {isTextareaExpanded ? (
+                      <>
+                        <Minimize size={16} />
+                        <span>Collapse Input</span>
+                      </>
+                    ) : (
+                      <>
+                        <Expand size={16} />
+                        <span>Expand Input</span>
+                      </>
+                    )}
+                  </Button>
+                  
+                  <p className="text-sm text-gray-500">
+                    We support plain text, news articles, and YouTube links.
+                  </p>
+                </div>
 
-          {/* Analysis Result */}
-          {renderAnalyzedText()}
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!content.trim() || isLoading}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl py-3 text-base font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Analyzing...</span>
+                    </div>
+                  ) : (
+                    "Analyze"
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Analysis Result - Same Width as Input */}
+            {renderAnalyzedText()}
+          </div>
 
           {/* Recommended Content Section */}
           <div className="max-w-6xl mx-auto">
