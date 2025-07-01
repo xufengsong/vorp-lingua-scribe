@@ -124,9 +124,9 @@ const Dashboard = () => {
       if (isChinesePoem) {
         // Mock Chinese analysis
         const chineseText = `风急天高猿啸哀，渚清沙白鸟飞回。
-无边落木萧萧下，不尽长江滚滚来。
-万里悲秋常作客，百年多病独登台。
-艰难苦恨繁霜鬓，潦倒新停浊酒杯。`;
+                             无边落木萧萧下，不尽长江滚滚来。
+                             万里悲秋常作客，百年多病独登台。
+                             艰难苦恨繁霜鬓，潦倒新停浊酒杯。`;
         
         setAnalysisResult(chineseText);
         
@@ -214,7 +214,7 @@ const Dashboard = () => {
     if (isChinese) {
       return (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result - Chinese Poem</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
           <div className="text-lg leading-relaxed font-serif">
             <TooltipProvider>
               {analysisResult.split('').map((char, index) => {
@@ -389,7 +389,7 @@ const Dashboard = () => {
             <div className="space-y-6">
               <div>
                 <Textarea
-                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning. Try the Chinese poem: 风急天高猿啸哀，渚清沙白鸟飞回。"
+                  placeholder="Paste text, news URL, or YouTube URL here… and we'll analyze the content for language learning."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   className="min-h-[120px] resize-none border-gray-300 focus:border-cyan-500 focus:ring-cyan-500 rounded-xl text-base"
@@ -412,7 +412,7 @@ const Dashboard = () => {
               </Button>
               
               <p className="text-sm text-gray-500 text-center">
-                We support plain text, news articles, and YouTube links. Try the Chinese poem demo!
+                We support plain text, news articles, and YouTube links.
               </p>
             </div>
           </div>
