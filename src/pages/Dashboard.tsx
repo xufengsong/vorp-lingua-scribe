@@ -11,7 +11,7 @@ interface WordAnalysis {
   word: string;
   meaning: string;
   baseForm?: string;
-  partOfSpeech?: string;
+  partOfSpeech?: string;  // noun, adjective, verb, number, direction?? etc..
 }
 
 interface PinnedTranslation {
@@ -24,11 +24,26 @@ interface PinnedTranslation {
 
 const Dashboard = () => {
   const [content, setContent] = useState("");
+
+  // A boolean to track when the app is busy (e.g., fetching analysis).
+  // Used to show/hide a loading spinner. Initialized as false.
   const [isLoading, setIsLoading] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<string>("");
+
+  // Holds the text *after* it has been analyzed. This is what gets displayed with highlights.
+  const [analysisResult, setAnalysisResult] = useState<string>("");  // analysis result should also be formatted??
+
+  // The state for the array of word analysis objects we discussed above.
+  // It holds the detailed breakdown of each word in the analysisResult.
   const [wordAnalysis, setWordAnalysis] = useState<WordAnalysis[]>([]);
+
+  // Holds an array of translations that the user has "pinned" by clicking on a word.
+  // PinnedTranslation is another custom type, likely similar to WordAnalysis but with a unique 'id'.
   const [pinnedTranslations, setPinnedTranslations] = useState<PinnedTranslation[]>([]);
+
+  // A boolean to control whether the panel showing pinned words is visible.
   const [showWordPanel, setShowWordPanel] = useState(false);
+
+  // A boolean to track if the main text input area is expanded or not.
   const [isTextareaExpanded, setIsTextareaExpanded] = useState(false);
   const { logout } = useAuth();
   
@@ -185,21 +200,32 @@ const Dashboard = () => {
   };
 
   const handleWordClick = (wordData: WordAnalysis) => {
+
+    // Creates a unique ID for the new pinned translation.
+    // This is important for React to efficiently update lists.
     const newPinned: PinnedTranslation = {
       id: `${wordData.word}-${Date.now()}`,
       ...wordData
     };
     
     setPinnedTranslations(prev => {
+      // `prev` is the current array of pinned translations.
+      // It checks if the word the user just clicked is already in the pinned list.
       const exists = prev.find(item => item.word === wordData.word);
       if (exists) return prev;
-      return [...prev, newPinned];
+      return [...prev, newPinned];  // prev + newPinned
     });
     setShowWordPanel(true);
   };
 
   const removePinnedTranslation = (id: string) => {
+
+    // Updates the pinned translations state by filtering the array.
+    // It keeps only the items whose 'id' does NOT match the one we want to remove.
     setPinnedTranslations(prev => prev.filter(item => item.id !== id));
+
+    // This is a check to see if the panel should be hidden after removing a word.
+    // If the list is about to become empty (length <= 1), it hides the panel.
     if (pinnedTranslations.length <= 1) {
       setShowWordPanel(false);
     }
@@ -209,6 +235,7 @@ const Dashboard = () => {
     if (!analysisResult) return null;
 
     // Handle Chinese text differently
+    // This is a regular expression that checks if the text contains any Chinese characters.
     const isChinese = /[\u4e00-\u9fff]/.test(analysisResult);
     
     if (isChinese) {
@@ -216,10 +243,16 @@ const Dashboard = () => {
         <div className="w-full bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
           <div className="text-lg leading-relaxed font-serif">
+            {/* // The TooltipProvider is a component from a UI library that manages all tooltips within it. */}
             <TooltipProvider>
+              {/* This splits the Chinese text into an array of individual characters ("a", "b", "c")
+                  and then maps over each character to create a React element for it.
+              */}
               {analysisResult.split('').map((char, index) => {
                 const wordData = mockChineseAnalysis[char];
-                
+
+                // If the character is punctuation, a space, or not found in the analysis data,
+                // just render it as plain text without any special features.
                 if (!wordData || /[\s，。\n]/.test(char)) {
                   return <span key={index} className={char === '\n' ? 'block' : ''}>{char === '\n' ? '' : char}</span>;
                 }
@@ -227,6 +260,11 @@ const Dashboard = () => {
                 return (
                   <Tooltip key={index}>
                     <TooltipTrigger asChild>
+                      {/* This `span` is the clickable character.
+                        - `onClick`: Calls `handleWordClick` when the user clicks it.
+                        - `onKeyDown`: Makes it accessible via keyboard (Enter or Space key).
+                        - `role="button"` & `aria-label`: Accessibility attributes for screen readers.
+                      */}
                       <span
                         className="cursor-pointer hover:bg-yellow-100 hover:underline rounded px-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-yellow-100"
                         onClick={() => handleWordClick(wordData)}
@@ -242,6 +280,8 @@ const Dashboard = () => {
                         {char}
                       </span>
                     </TooltipTrigger>
+
+                    {/* This is the content that appears in the tooltip popup on hover. */}
                     <TooltipContent className="max-w-xs">
                       <div className="text-sm">
                         <div className="font-semibold">{wordData.word}</div>
@@ -258,6 +298,8 @@ const Dashboard = () => {
               })}
             </TooltipProvider>
           </div>
+          {/* A static box at the bottom providing a general translation of the poem. */}
+          {/* Is this needed????? */}
           <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
             <strong>Poem Translation:</strong> This is Du Fu's famous poem "Ascending the Heights" (登高), expressing the poet's feelings of loneliness and hardship while traveling far from home in autumn.
           </div>
