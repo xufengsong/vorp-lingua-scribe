@@ -45,6 +45,13 @@ const Dashboard = () => {
 
   // A boolean to track if the main text input area is expanded or not.
   const [isTextareaExpanded, setIsTextareaExpanded] = useState(false);
+
+  // Track highlighted words for persistent highlighting
+  const [highlightedWords, setHighlightedWords] = useState<Set<string>>(new Set());
+
+  // Track button state for learn words functionality
+  const [isLearning, setIsLearning] = useState(false);
+
   const { logout } = useAuth();
   
   // Mock Chinese poem analysis data
@@ -215,19 +222,75 @@ const Dashboard = () => {
       if (exists) return prev;
       return [...prev, newPinned];  // prev + newPinned
     });
+
+    // Add to highlighted words
+    setHighlightedWords(prev => new Set([...prev, wordData.word]));
     setShowWordPanel(true);
   };
 
   const removePinnedTranslation = (id: string) => {
-
+    const wordToRemove = pinnedTranslations.find(item => item.id === id);
+    
     // Updates the pinned translations state by filtering the array.
     // It keeps only the items whose 'id' does NOT match the one we want to remove.
     setPinnedTranslations(prev => prev.filter(item => item.id !== id));
+
+    // Remove from highlighted words
+    if (wordToRemove) {
+      setHighlightedWords(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(wordToRemove.word);
+        return newSet;
+      });
+    }
 
     // This is a check to see if the panel should be hidden after removing a word.
     // If the list is about to become empty (length <= 1), it hides the panel.
     if (pinnedTranslations.length <= 1) {
       setShowWordPanel(false);
+    }
+  };
+
+  const handleLearnSelectedWords = async () => {
+    if (pinnedTranslations.length === 0) return;
+
+    setIsLearning(true);
+    
+    try {
+      // Prepare the payload with all selected words
+      const payload = {
+        words: pinnedTranslations.map(translation => ({
+          word: translation.word,
+          meaning: translation.meaning,
+          baseForm: translation.baseForm,
+          partOfSpeech: translation.partOfSpeech
+        }))
+      };
+
+      console.log('Learning selected words:', payload);
+
+      // Mock API call - replace with actual endpoint
+      const response = await fetch('http://127.0.0.1:8000/api/learn-words/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        console.log('Words successfully sent for learning');
+        // Provide visual feedback - button shows "Saved!" temporarily
+        setTimeout(() => {
+          setIsLearning(false);
+        }, 2000);
+      } else {
+        console.error('Failed to send words for learning');
+        setIsLearning(false);
+      }
+    } catch (error) {
+      console.error('Error sending words for learning:', error);
+      setIsLearning(false);
     }
   };
 
@@ -257,6 +320,9 @@ const Dashboard = () => {
                   return <span key={index} className={char === '\n' ? 'block' : ''}>{char === '\n' ? '' : char}</span>;
                 }
 
+                // Check if this word is highlighted
+                const isHighlighted = highlightedWords.has(wordData.word);
+
                 return (
                   <Tooltip key={index}>
                     <TooltipTrigger asChild>
@@ -266,7 +332,9 @@ const Dashboard = () => {
                         - `role="button"` & `aria-label`: Accessibility attributes for screen readers.
                       */}
                       <span
-                        className="cursor-pointer hover:bg-yellow-100 hover:underline rounded px-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-yellow-100"
+                        className={`cursor-pointer hover:bg-yellow-100 hover:underline rounded px-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-yellow-100 ${
+                          isHighlighted ? 'bg-yellow-200' : ''
+                        }`}
                         onClick={() => handleWordClick(wordData)}
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -323,11 +391,16 @@ const Dashboard = () => {
                 return <span key={index}>{segment}</span>;
               }
 
+              // Check if this word is highlighted
+              const isHighlighted = highlightedWords.has(wordData.word);
+
               return (
                 <Tooltip key={index}>
                   <TooltipTrigger asChild>
                     <span
-                      className="cursor-pointer hover:bg-cyan-100 hover:underline rounded px-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-cyan-100"
+                      className={`cursor-pointer hover:bg-cyan-100 hover:underline rounded px-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-cyan-100 ${
+                        isHighlighted ? 'bg-cyan-200' : ''
+                      }`}
                       onClick={() => handleWordClick(wordData)}
                       tabIndex={0}
                       onKeyDown={(e) => {
@@ -539,7 +612,7 @@ const Dashboard = () => {
         {/* Word Meaning Panel - Right Sidebar */}
         {showWordPanel && (
           <div className="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 shadow-lg z-40 overflow-y-auto animate-slide-in-right">
-            <div className="p-6">
+            <div className="p-6 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Word Meanings</h3>
                 <Button
@@ -552,7 +625,7 @@ const Dashboard = () => {
                 </Button>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1">
                 {pinnedTranslations.map((translation) => (
                   <div
                     key={translation.id}
@@ -595,6 +668,26 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+
+              {/* Learn Selected Words Button */}
+              {pinnedTranslations.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <Button
+                    onClick={handleLearnSelectedWords}
+                    disabled={isLearning}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl py-3 text-base font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLearning ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Saved!</span>
+                      </div>
+                    ) : (
+                      "Learn Selected Words"
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
