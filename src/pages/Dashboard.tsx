@@ -195,7 +195,7 @@ const Dashboard = () => {
           return acc;
         }, {});
 
-        console.log("this is cleanedLookupTable", cleanLookupTable)
+        // console.log("this is cleanedLookupTable", cleanLookupTable)
 
         // Second, use this cleaned loop-up table to contruct the WordAnalysis String
         const Analysis: WordAnalysis[] = Object.keys(cleanLookupTable).map(wordKey => ({
@@ -276,7 +276,7 @@ const Dashboard = () => {
           word: translation.word,
           meaning: translation.meaning,
           baseForm: translation.baseForm,
-          partOfSpeach: translation.partOfSpeach
+          // partOfSpeach: translation.partOfSpeach //don't have the database ready yet
         }))
       };
 
@@ -287,6 +287,7 @@ const Dashboard = () => {
       const response = await axiosInstance.post('/api/update_vocabulary/', payload);
 
       console.log('Words successfully sent for learning');
+      console.log(response.data)
       // Provide visual feedback - button shows "Saved!" temporarily
       // and clears pinnedTranslations
       } catch (error: any) { // 1. Give 'error' the type 'any'

@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContest";
+import axiosInstance from "../axiosInstance"
 
 const Settings = () => {
   const { user, logout } = useAuth();
@@ -74,6 +75,27 @@ const Settings = () => {
 
   //   fetchProfileData();
   // }, [navigate, toast]); // Dependencies for the useEffect hook
+
+
+    // useEffect(() => {
+    //   const checkUserSession = async () => {
+    //     try {
+    //       // 2. USE AXIOS: Switched from fetch to axiosInstance. It automatically includes credentials.
+    //       const response = await axiosInstance.get('/api/user_profile_view/');
+    //       // For axios, the response data is in the `data` property.
+    //       setUser(response.data);
+    //     } catch (error) {
+    //       // Axios automatically throws an error for non-2xx responses (like 401),
+    //       // so we just need to catch it.
+    //       console.error("No active session found.", error);
+    //       setUser(null);
+    //     } finally {
+    //       setIsLoading(false);
+    //     }
+    //   };
+  
+    //   checkUserSession();
+    // }, []);
 
 
 
