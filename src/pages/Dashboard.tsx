@@ -11,7 +11,7 @@ interface WordAnalysis {
   word: string;
   meaning: string;
   baseForm?: string;
-  partOfSpeech?: string;  // noun, adjective, verb, number, direction?? etc..
+  partOfSpeach?: string;  // noun, adjective, verb, number, direction?? etc..
 }
 
 interface PinnedTranslation {
@@ -19,7 +19,7 @@ interface PinnedTranslation {
   word: string;
   meaning: string;
   baseForm?: string;
-  partOfSpeech?: string;
+  partOfSpeach?: string;
 }
 
 const Dashboard = () => {
@@ -56,60 +56,60 @@ const Dashboard = () => {
   
   // Mock Chinese poem analysis data
   const mockChineseAnalysis: { [key: string]: WordAnalysis } = {
-    "风": { word: "风", meaning: "wind", partOfSpeech: "noun" },
-    "急": { word: "急", meaning: "urgent, swift", partOfSpeech: "adjective" },
-    "天": { word: "天", meaning: "sky, heaven", partOfSpeech: "noun" },
-    "高": { word: "高", meaning: "high, tall", partOfSpeech: "adjective" },
-    "猿": { word: "猿", meaning: "ape, monkey", partOfSpeech: "noun" },
-    "啸": { word: "啸", meaning: "to howl, whistle", partOfSpeech: "verb" },
-    "哀": { word: "哀", meaning: "sorrow, grief", partOfSpeech: "adjective" },
-    "渚": { word: "渚", meaning: "small island, sandbar", partOfSpeech: "noun" },
-    "清": { word: "清", meaning: "clear, pure", partOfSpeech: "adjective" },
-    "沙": { word: "沙", meaning: "sand", partOfSpeech: "noun" },
-    "白": { word: "白", meaning: "white", partOfSpeech: "adjective" },
-    "鸟": { word: "鸟", meaning: "bird", partOfSpeech: "noun" },
-    "飞": { word: "飞", meaning: "to fly", partOfSpeech: "verb" },
-    "回": { word: "回", meaning: "to return", partOfSpeech: "verb" },
-    "无": { word: "无", meaning: "without, no", partOfSpeech: "adverb" },
-    "边": { word: "边", meaning: "edge, border", partOfSpeech: "noun" },
-    "落": { word: "落", meaning: "to fall, drop", partOfSpeech: "verb" },
-    "木": { word: "木", meaning: "tree, wood", partOfSpeech: "noun" },
-    "萧": { word: "萧", meaning: "desolate sound", partOfSpeech: "adjective" },
-    "下": { word: "下", meaning: "down, below", partOfSpeech: "direction" },
-    "不": { word: "不", meaning: "not", partOfSpeech: "adverb" },
-    "尽": { word: "尽", meaning: "endless, all", partOfSpeech: "adjective" },
-    "长": { word: "长", meaning: "long", partOfSpeech: "adjective" },
-    "江": { word: "江", meaning: "river", partOfSpeech: "noun" },
-    "滚": { word: "滚", meaning: "to roll", partOfSpeech: "verb" },
-    "来": { word: "来", meaning: "to come", partOfSpeech: "verb" },
-    "万": { word: "万", meaning: "ten thousand", partOfSpeech: "number" },
-    "里": { word: "里", meaning: "mile, distance", partOfSpeech: "noun" },
-    "悲": { word: "悲", meaning: "sad, grief", partOfSpeech: "adjective" },
-    "秋": { word: "秋", meaning: "autumn", partOfSpeech: "noun" },
-    "常": { word: "常", meaning: "often, always", partOfSpeech: "adverb" },
-    "作": { word: "作", meaning: "to be, act as", partOfSpeech: "verb" },
-    "客": { word: "客", meaning: "guest, traveler", partOfSpeech: "noun" },
-    "百": { word: "百", meaning: "hundred", partOfSpeech: "number" },
-    "年": { word: "年", meaning: "year", partOfSpeech: "noun" },
-    "多": { word: "多", meaning: "many, much", partOfSpeech: "adjective" },
-    "病": { word: "病", meaning: "illness, sick", partOfSpeech: "noun" },
-    "独": { word: "独", meaning: "alone", partOfSpeech: "adverb" },
-    "登": { word: "登", meaning: "to climb, ascend", partOfSpeech: "verb" },
-    "台": { word: "台", meaning: "platform, terrace", partOfSpeech: "noun" },
-    "艰": { word: "艰", meaning: "difficult", partOfSpeech: "adjective" },
-    "难": { word: "难", meaning: "difficult", partOfSpeech: "adjective" },
-    "苦": { word: "苦", meaning: "bitter, suffering", partOfSpeech: "adjective" },
-    "恨": { word: "恨", meaning: "hate, regret", partOfSpeech: "verb" },
-    "繁": { word: "繁", meaning: "numerous, dense", partOfSpeech: "adjective" },
-    "霜": { word: "霜", meaning: "frost", partOfSpeech: "noun" },
-    "鬓": { word: "鬓", meaning: "temples (hair)", partOfSpeech: "noun" },
-    "潦": { word: "潦", meaning: "down and out", partOfSpeech: "adjective" },
-    "倒": { word: "倒", meaning: "fallen, dejected", partOfSpeech: "adjective" },
-    "新": { word: "新", meaning: "new, recent", partOfSpeech: "adjective" },
-    "停": { word: "停", meaning: "to stop", partOfSpeech: "verb" },
-    "浊": { word: "浊", meaning: "muddy, turbid", partOfSpeech: "adjective" },
-    "酒": { word: "酒", meaning: "wine, alcohol", partOfSpeech: "noun" },
-    "杯": { word: "杯", meaning: "cup", partOfSpeech: "noun" }
+    "风": { word: "风", meaning: "wind", partOfSpeach: "noun" },
+    "急": { word: "急", meaning: "urgent, swift", partOfSpeach: "adjective" },
+    "天": { word: "天", meaning: "sky, heaven", partOfSpeach: "noun" },
+    "高": { word: "高", meaning: "high, tall", partOfSpeach: "adjective" },
+    "猿": { word: "猿", meaning: "ape, monkey", partOfSpeach: "noun" },
+    "啸": { word: "啸", meaning: "to howl, whistle", partOfSpeach: "verb" },
+    "哀": { word: "哀", meaning: "sorrow, grief", partOfSpeach: "adjective" },
+    "渚": { word: "渚", meaning: "small island, sandbar", partOfSpeach: "noun" },
+    "清": { word: "清", meaning: "clear, pure", partOfSpeach: "adjective" },
+    "沙": { word: "沙", meaning: "sand", partOfSpeach: "noun" },
+    "白": { word: "白", meaning: "white", partOfSpeach: "adjective" },
+    "鸟": { word: "鸟", meaning: "bird", partOfSpeach: "noun" },
+    "飞": { word: "飞", meaning: "to fly", partOfSpeach: "verb" },
+    "回": { word: "回", meaning: "to return", partOfSpeach: "verb" },
+    "无": { word: "无", meaning: "without, no", partOfSpeach: "adverb" },
+    "边": { word: "边", meaning: "edge, border", partOfSpeach: "noun" },
+    "落": { word: "落", meaning: "to fall, drop", partOfSpeach: "verb" },
+    "木": { word: "木", meaning: "tree, wood", partOfSpeach: "noun" },
+    "萧": { word: "萧", meaning: "desolate sound", partOfSpeach: "adjective" },
+    "下": { word: "下", meaning: "down, below", partOfSpeach: "direction" },
+    "不": { word: "不", meaning: "not", partOfSpeach: "adverb" },
+    "尽": { word: "尽", meaning: "endless, all", partOfSpeach: "adjective" },
+    "长": { word: "长", meaning: "long", partOfSpeach: "adjective" },
+    "江": { word: "江", meaning: "river", partOfSpeach: "noun" },
+    "滚": { word: "滚", meaning: "to roll", partOfSpeach: "verb" },
+    "来": { word: "来", meaning: "to come", partOfSpeach: "verb" },
+    "万": { word: "万", meaning: "ten thousand", partOfSpeach: "number" },
+    "里": { word: "里", meaning: "mile, distance", partOfSpeach: "noun" },
+    "悲": { word: "悲", meaning: "sad, grief", partOfSpeach: "adjective" },
+    "秋": { word: "秋", meaning: "autumn", partOfSpeach: "noun" },
+    "常": { word: "常", meaning: "often, always", partOfSpeach: "adverb" },
+    "作": { word: "作", meaning: "to be, act as", partOfSpeach: "verb" },
+    "客": { word: "客", meaning: "guest, traveler", partOfSpeach: "noun" },
+    "百": { word: "百", meaning: "hundred", partOfSpeach: "number" },
+    "年": { word: "年", meaning: "year", partOfSpeach: "noun" },
+    "多": { word: "多", meaning: "many, much", partOfSpeach: "adjective" },
+    "病": { word: "病", meaning: "illness, sick", partOfSpeach: "noun" },
+    "独": { word: "独", meaning: "alone", partOfSpeach: "adverb" },
+    "登": { word: "登", meaning: "to climb, ascend", partOfSpeach: "verb" },
+    "台": { word: "台", meaning: "platform, terrace", partOfSpeach: "noun" },
+    "艰": { word: "艰", meaning: "difficult", partOfSpeach: "adjective" },
+    "难": { word: "难", meaning: "difficult", partOfSpeach: "adjective" },
+    "苦": { word: "苦", meaning: "bitter, suffering", partOfSpeach: "adjective" },
+    "恨": { word: "恨", meaning: "hate, regret", partOfSpeach: "verb" },
+    "繁": { word: "繁", meaning: "numerous, dense", partOfSpeach: "adjective" },
+    "霜": { word: "霜", meaning: "frost", partOfSpeach: "noun" },
+    "鬓": { word: "鬓", meaning: "temples (hair)", partOfSpeach: "noun" },
+    "潦": { word: "潦", meaning: "down and out", partOfSpeach: "adjective" },
+    "倒": { word: "倒", meaning: "fallen, dejected", partOfSpeach: "adjective" },
+    "新": { word: "新", meaning: "new, recent", partOfSpeach: "adjective" },
+    "停": { word: "停", meaning: "to stop", partOfSpeach: "verb" },
+    "浊": { word: "浊", meaning: "muddy, turbid", partOfSpeach: "adjective" },
+    "酒": { word: "酒", meaning: "wine, alcohol", partOfSpeach: "noun" },
+    "杯": { word: "杯", meaning: "cup", partOfSpeach: "noun" }
   };
   
   // Mock recommended content
@@ -180,13 +180,41 @@ const Dashboard = () => {
         
         // Mock analysis result for demonstration
         setAnalysisResult(content);
-        const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
-          word: word.replace(/[^\w]/g, ''),
-          meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
-          baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
-          partOfSpeech: "noun"
+        // const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
+        //   word: word.replace(/[^\w]/g, ''),
+        //   meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
+        //   baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
+        //   partOfSpeach: "noun"
+        // })).filter(item => item.word.length > 0);
+        // setWordAnalysis(mockAnalysis); /[^\p{L}\p{N}_]/gu
+
+        // first construts a cleaned key loop-up table
+        const cleanLookupTable = Object.keys(data.analysis).reduce((acc, originalKey) => {
+          // 1. Create the cleaned key
+          // const cleanedKey = originalKey.replace(/[^\w]/g, ''); // this regular expression cannot treat Korean word as non-words and clean it
+          const cleanedKey = originalKey.replace(/[^\p{L}\p{N}_]/gu, '');
+          // 2. Add the entry to our new table using the cleaned key
+          if (cleanedKey) {
+            acc[cleanedKey] = data.analysis[originalKey];
+          }
+          
+          // 3. Return the accumulator for the next iteration
+          return acc;
+        }, {});
+
+        console.log("this is cleanedLookupTable", cleanLookupTable)
+
+        // Second, use this cleaned loop-up table to contruct the WordAnalysis String
+        const Analysis: WordAnalysis[] = Object.keys(cleanLookupTable).map(wordKey => ({
+          word: wordKey,
+          meaning: cleanLookupTable[wordKey].meaning,
+          baseForm: cleanLookupTable[wordKey].base.toLowerCase(),
+          partOfSpeach: cleanLookupTable[wordKey].partOfSpeach,
         })).filter(item => item.word.length > 0);
-        setWordAnalysis(mockAnalysis);
+
+        // Third, Set the WordAnalysis to Analysis which is also a string of interface WordAnalysis
+        setWordAnalysis(Analysis)
+        // console.log(wordAnalysis)  // can be indexed by number from 0??
       } else {
         console.error("Error:", data);
       }
@@ -198,7 +226,7 @@ const Dashboard = () => {
         word: word.replace(/[^\w]/g, ''),
         meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
         baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
-        partOfSpeech: "noun"
+        partOfSpeach: "noun"
       })).filter(item => item.word.length > 0);
       setWordAnalysis(mockAnalysis);
     } finally {
@@ -263,14 +291,14 @@ const Dashboard = () => {
           word: translation.word,
           meaning: translation.meaning,
           baseForm: translation.baseForm,
-          partOfSpeech: translation.partOfSpeech
+          partOfSpeach: translation.partOfSpeach
         }))
       };
 
       console.log('Learning selected words:', payload);
 
       // Mock API call - replace with actual endpoint
-      const response = await fetch('http://127.0.0.1:8000/api/learn-words/', {
+      const response = await fetch('http://127.0.0.1:8000/api/where??/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -312,7 +340,7 @@ const Dashboard = () => {
                   and then maps over each character to create a React element for it.
               */}
               {analysisResult.split('').map((char, index) => {
-                const wordData = mockChineseAnalysis[char];
+                const wordData = mockChineseAnalysis[char];  {/* Original was mockChineseAnalysis */}
 
                 // If the character is punctuation, a space, or not found in the analysis data,
                 // just render it as plain text without any special features.
@@ -354,9 +382,9 @@ const Dashboard = () => {
                       <div className="text-sm">
                         <div className="font-semibold">{wordData.word}</div>
                         <div className="text-gray-600">{wordData.meaning}</div>
-                        {wordData.partOfSpeech && (
+                        {wordData.partOfSpeach && (
                           <div className="text-xs text-gray-500 mt-1">
-                            {wordData.partOfSpeech}
+                            {wordData.partOfSpeach}
                           </div>
                         )}
                       </div>
@@ -375,18 +403,32 @@ const Dashboard = () => {
       );
     }
 
+    // use to debug reason
+    // console.log("this is WordAnalysis string", wordAnalysis)
+
     // Regular text analysis (existing code)
-    const words = analysisResult.split(/(\s+)/);
-    
+    const words = analysisResult.split(/(\s+)/);  // slipt user input text into chuncks
+    console.log("this is user input texts", words)
     return (
       <div className="w-full bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
         <div className="text-base leading-relaxed">
           <TooltipProvider>
             {words.map((segment, index) => {
-              const cleanWord = segment.replace(/[^\w]/g, '');
+              // /[^\w]/g does not recoginize Korean as letter and clean it
+              const cleanWord = segment.replace(/[^\p{L}\p{N}_]/gu, '');
+              console.log("this is cleanWord", cleanWord)
               const wordData = wordAnalysis.find(w => w.word === cleanWord);
-              
+
+              // Log both the clean word and the list of words you're searching through
+              if (cleanWord) {
+                  console.log(`Trying to find: '${cleanWord}'`);
+                  console.log('Searching in:', wordAnalysis.map(w => w.word));
+              }
+              else {
+                console.log("found nothing")
+              }
+
               if (!wordData || segment.trim() === '') {
                 return <span key={index}>{segment}</span>;
               }
@@ -398,8 +440,8 @@ const Dashboard = () => {
                 <Tooltip key={index}>
                   <TooltipTrigger asChild>
                     <span
-                      className={`cursor-pointer hover:bg-cyan-100 hover:underline rounded px-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-cyan-100 ${
-                        isHighlighted ? 'bg-cyan-200' : ''
+                      className={`cursor-pointer hover:bg-yellow-100 hover:underline rounded px-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-yellow-100 ${
+                        isHighlighted ? 'bg-yellow-200' : ''
                       }`}
                       onClick={() => handleWordClick(wordData)}
                       tabIndex={0}
@@ -644,9 +686,9 @@ const Dashboard = () => {
                             Base form: {translation.baseForm}
                           </div>
                         )}
-                        {translation.partOfSpeech && (
+                        {translation.partOfSpeach && (
                           <div className="text-xs text-gray-500">
-                            Part of speech: {translation.partOfSpeech}
+                            Part of speech: {translation.partOfSpeach}
                           </div>
                         )}
                       </div>
