@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContest"
+import axiosInstance from '../axiosInstance'
 
 interface WordAnalysis {
   word: string;
@@ -281,32 +282,25 @@ const Dashboard = () => {
 
       console.log('Learning selected words:', payload);
 
-      // Mock API call - replace with actual endpoint
-      const response = await fetch('http://127.0.0.1:8000/api/update_vocabulary/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      // 1. The payload is passed directly as the second argument.
+      // 2. The URL is now relative, using the baseURL from axiosInstance.
+      const response = await axiosInstance.post('/api/update_vocabulary/', payload);
 
-      if (response.ok) {
-        console.log('Words successfully sent for learning');
-        setIsLearning(false);
-        // Provide visual feedback - button shows "Saved!" temporarily
-        // and clears pinnedTranslations
-        // setTimeout(() => {
-        //   setIsLearning(false);
-        // }, 2000);
-
-      } else {
-        console.error('Failed to send words for learning');
-        setIsLearning(false);
-      }
-    } catch (error) {
-      console.error('Error sending words for learning:', error);
-      setIsLearning(false);
-    }
+      console.log('Words successfully sent for learning');
+      // Provide visual feedback - button shows "Saved!" temporarily
+      // and clears pinnedTranslations
+      } catch (error: any) { // 1. Give 'error' the type 'any'
+              // 2. Safely check if 'error.response' exists before accessing it.
+              if (error.response) {
+                  // The server responded with an error (4xx or 5xx)
+                  console.error('Error from server:', error.response.data);
+              } else {
+                  // A network error or other issue occurred before a response was received
+                  console.error('Error sending words:', error.message);
+              }
+          } finally {
+              setIsLearning(false);
+          }
   };
 
   const renderAnalyzedText = () => {

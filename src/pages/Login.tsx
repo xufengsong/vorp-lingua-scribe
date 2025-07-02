@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContest";
+import axiosInstance from "../axiosInstance"
+
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,6 +21,9 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login({ email, password });
+    
+
+
     // if (!email || !password) {
     //   toast({
     //     title: "Missing Information",
@@ -67,6 +73,7 @@ const Login = () => {
     //   setIsLoading(false);
     // }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50">

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import axiosInstance from "../axiosInstance"
 
 // Define the shape of your user data
 interface User {
@@ -32,85 +33,154 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // This useEffect will run when the app first loads to check
   // if the user already has a valid session cookie.
+  // useEffect(() => {
+  //   const checkUserSession = async () => {
+  //     try {
+  //       // We directly call the profile view. If the user has a valid sessionid cookie,
+  //       // this request will succeed and return the user's data.
+  //       const response = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
+  //         {method: 'GET', credentials: 'include'},
+  //       );
+
+  //       if (response.ok) {
+  //         const userData = await response.json();
+  //         setUser(userData);
+  //       } else {
+  //         // If the request fails (e.g., 401 Unauthorized), it means there's no active session.
+  //         setUser(null);
+  //       }
+  //     } catch (error) {
+  //       // This can happen if the backend is down.
+  //       console.error("Failed to check user session", error);
+  //       setUser(null);
+  //     } finally {
+  //       // We're done checking, so we can stop showing a loading state.
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   checkUserSession();
+  // }, []); // The empty dependency array means this runs only once on mount.
+
+
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        // We directly call the profile view. If the user has a valid sessionid cookie,
-        // this request will succeed and return the user's data.
-        const response = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
-          {method: 'GET', credentials: 'include'},
-        );
-
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          // If the request fails (e.g., 401 Unauthorized), it means there's no active session.
-          setUser(null);
-        }
+        // 2. USE AXIOS: Switched from fetch to axiosInstance. It automatically includes credentials.
+        const response = await axiosInstance.get('/api/user_profile_view/');
+        // For axios, the response data is in the `data` property.
+        setUser(response.data);
       } catch (error) {
-        // This can happen if the backend is down.
-        console.error("Failed to check user session", error);
+        // Axios automatically throws an error for non-2xx responses (like 401),
+        // so we just need to catch it.
+        console.error("No active session found.", error);
         setUser(null);
       } finally {
-        // We're done checking, so we can stop showing a loading state.
         setIsLoading(false);
       }
     };
 
     checkUserSession();
-  }, []); // The empty dependency array means this runs only once on mount.
+  }, []);
 
   // This is the function that gets called from your Login page.
   // `credentials` is just an object like { email: "...", password: "..." }
+  // const login = async (credentials: any) => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Step 1: Call the login endpoint.
+  //     // Django will authenticate and set the sessionid cookie on the browser automatically.
+  //     const loginResponse = await fetch('http://127.0.0.1:8000/api/login/', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(credentials),
+  //       credentials: 'include',
+  //     });
+
+  //     if (!loginResponse.ok) {
+  //       const errorData = await loginResponse.json();
+  //       throw new Error(errorData.error || 'Invalid credentials');
+  //     }
+
+  //     // Step 2: Since login was successful, immediately fetch the user's full profile data.
+  //     const profileResponse = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
+  //       {method: 'GET', credentials: 'include'}
+  //     );
+  //     if (profileResponse.ok) {
+  //       const userData = await profileResponse.json();
+  //       setUser(userData); // Set the user in our context
+  //       toast({ title: "Welcome back!" });
+  //       navigate('/dashboard'); // Navigate to the dashboard
+  //     } else {
+  //        throw new Error('Could not fetch user profile after login.');
+  //     }
+
+  //   } catch (error) {
+  //     toast({ title: "Login Failed", description: String(error), variant: "destructive" });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // Before making the login request, fetch CSRF token
+  const fetchCSRFToken = async () => {
+    try {
+      await axiosInstance.get('/api/get-csrf-token/');
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
+  };
+
   const login = async (credentials: any) => {
     setIsLoading(true);
     try {
-      // Step 1: Call the login endpoint.
-      // Django will authenticate and set the sessionid cookie on the browser automatically.
-      const loginResponse = await fetch('http://127.0.0.1:8000/api/login/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-        credentials: 'include',
-      });
 
-      if (!loginResponse.ok) {
-        const errorData = await loginResponse.json();
-        throw new Error(errorData.error || 'Invalid credentials');
-      }
+      await fetchCSRFToken();
+      // 3. USE AXIOS FOR LOGIN: Switched from fetch. Axios handles JSON stringifying automatically.
+      await axiosInstance.post('/api/login/', credentials);
 
-      // Step 2: Since login was successful, immediately fetch the user's full profile data.
-      const profileResponse = await fetch('http://127.0.0.1:8000/api/user_profile_view/',
-        {method: 'GET', credentials: 'include'}
-      );
-      if (profileResponse.ok) {
-        const userData = await profileResponse.json();
-        setUser(userData); // Set the user in our context
-        toast({ title: "Welcome back!" });
-        navigate('/dashboard'); // Navigate to the dashboard
-      } else {
-         throw new Error('Could not fetch user profile after login.');
-      }
+      // THE FIX: Wait for a very short moment to ensure the browser
+      // has processed and saved the sessionid cookie from the previous request.
+      await new Promise(resolve => setTimeout(resolve, 100)); // 50ms delay
 
-    } catch (error) {
-      toast({ title: "Login Failed", description: String(error), variant: "destructive" });
+      // 4. USE AXIOS FOR PROFILE: Since login was successful, fetch the user's profile.
+      const profileResponse = await axiosInstance.get('/api/user_profile_view/');
+      setUser(profileResponse.data);
+      toast({ title: "Welcome back!" });
+      navigate('/dashboard');
+
+    } catch (error: any) {
+      // 5. IMPROVED ERROR HANDLING: Axios provides detailed error objects.
+      const errorMessage = error.response?.data?.error || 'Invalid credentials or server error.';
+      toast({ title: "Login Failed", description: errorMessage, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // const logout = async () => {
+  //   try {
+  //       await fetch('http://127.0.0.1:8000/api/logout/', { method: 'POST', credentials: 'include'});
+  //   } catch (error) {
+  //       console.error("Logout failed", error);
+  //   } finally {
+  //       setUser(null);
+  //       // We don't need to manage localStorage anymore.
+  //       // Django's logout view will have cleared the session cookie.
+  //       // navigate('/login');
+  //       window.location.href = '/login'
+  //   }
+  // };
+
   const logout = async () => {
     try {
-        await fetch('http://127.0.0.1:8000/api/logout/', { method: 'POST', credentials: 'include'});
+      // 6. USE AXIOS FOR LOGOUT
+      await axiosInstance.post('/api/logout/');
     } catch (error) {
-        console.error("Logout failed", error);
+      console.error("Logout failed", error);
     } finally {
-        setUser(null);
-        // We don't need to manage localStorage anymore.
-        // Django's logout view will have cleared the session cookie.
-        // navigate('/login');
-        window.location.href = '/login'
+      setUser(null);
+      window.location.href = '/login';
     }
   };
 
