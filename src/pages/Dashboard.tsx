@@ -178,15 +178,7 @@ const Dashboard = () => {
         console.log("Success:", data);
         console.log("Translation List:", data.analysis);
         
-        // Mock analysis result for demonstration
         setAnalysisResult(content);
-        // const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
-        //   word: word.replace(/[^\w]/g, ''),
-        //   meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
-        //   baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
-        //   partOfSpeach: "noun"
-        // })).filter(item => item.word.length > 0);
-        // setWordAnalysis(mockAnalysis); /[^\p{L}\p{N}_]/gu
 
         // first construts a cleaned key loop-up table
         const cleanLookupTable = Object.keys(data.analysis).reduce((acc, originalKey) => {
@@ -220,15 +212,7 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('There was an error sending the request!', error);
-      // Mock analysis for demo when backend is not available
-      setAnalysisResult(content);
-      const mockAnalysis: WordAnalysis[] = content.split(/\s+/).map(word => ({
-        word: word.replace(/[^\w]/g, ''),
-        meaning: `Translation of "${word.replace(/[^\w]/g, '')}"`,
-        baseForm: word.replace(/[^\w]/g, '').toLowerCase(),
-        partOfSpeach: "noun"
-      })).filter(item => item.word.length > 0);
-      setWordAnalysis(mockAnalysis);
+      // need better error logging 
     } finally {
       setIsLoading(false);
     }
@@ -298,7 +282,7 @@ const Dashboard = () => {
       console.log('Learning selected words:', payload);
 
       // Mock API call - replace with actual endpoint
-      const response = await fetch('http://127.0.0.1:8000/api/where??/', {
+      const response = await fetch('http://127.0.0.1:8000/api/update_vocabulary/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -308,10 +292,13 @@ const Dashboard = () => {
 
       if (response.ok) {
         console.log('Words successfully sent for learning');
+        setIsLearning(false);
         // Provide visual feedback - button shows "Saved!" temporarily
-        setTimeout(() => {
-          setIsLearning(false);
-        }, 2000);
+        // and clears pinnedTranslations
+        // setTimeout(() => {
+        //   setIsLearning(false);
+        // }, 2000);
+
       } else {
         console.error('Failed to send words for learning');
         setIsLearning(false);
@@ -408,7 +395,7 @@ const Dashboard = () => {
 
     // Regular text analysis (existing code)
     const words = analysisResult.split(/(\s+)/);  // slipt user input text into chuncks
-    console.log("this is user input texts", words)
+    // console.log("this is user input texts", words)
     return (
       <div className="w-full bg-white rounded-xl border border-gray-200 p-6 mb-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h3>
@@ -417,17 +404,17 @@ const Dashboard = () => {
             {words.map((segment, index) => {
               // /[^\w]/g does not recoginize Korean as letter and clean it
               const cleanWord = segment.replace(/[^\p{L}\p{N}_]/gu, '');
-              console.log("this is cleanWord", cleanWord)
+              // console.log("this is cleanWord", cleanWord)
               const wordData = wordAnalysis.find(w => w.word === cleanWord);
 
-              // Log both the clean word and the list of words you're searching through
-              if (cleanWord) {
-                  console.log(`Trying to find: '${cleanWord}'`);
-                  console.log('Searching in:', wordAnalysis.map(w => w.word));
-              }
-              else {
-                console.log("found nothing")
-              }
+              // Log both the clean word and the list of words you're searching through to better debug
+              // if (cleanWord) {
+              //     console.log(`Trying to find: '${cleanWord}'`);
+              //     console.log('Searching in:', wordAnalysis.map(w => w.word));
+              // }
+              // else {
+              //   console.log("found nothing")
+              // }
 
               if (!wordData || segment.trim() === '') {
                 return <span key={index}>{segment}</span>;
