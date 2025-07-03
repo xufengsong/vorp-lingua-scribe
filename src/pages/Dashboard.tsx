@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Home, Settings, DollarSign, LogOut, X, Expand, Minimize } from "lucide-react";
+import { Home, Settings, DollarSign, LogOut, X, Expand, Minimize, Crown, Sparkle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContest"
 import axiosInstance from '../axiosInstance'
 
@@ -52,6 +55,14 @@ const Dashboard = () => {
 
   // Track button state for learn words functionality
   const [isLearning, setIsLearning] = useState(false);
+
+  // Demo user data - replace with backend data later
+  const demoUser = {
+    username: "DemoUser",
+    tier: "free" as const,
+    apiUsed: 30,
+    apiLimit: 50,
+  };
 
   const { logout } = useAuth();
   
@@ -135,8 +146,17 @@ const Dashboard = () => {
     }
   ];
 
+  // New state for usage limit modal
+  const [showUsageLimitModal, setShowUsageLimitModal] = useState(false);
+
   const handleSubmit = async () => {
     if (!content.trim()) return;
+    
+    // Check usage limit for free users
+    if (demoUser.tier === "free" && demoUser.apiUsed >= demoUser.apiLimit) {
+      setShowUsageLimitModal(true);
+      return;
+    }
     
     setIsLoading(true);
 
@@ -458,6 +478,38 @@ const Dashboard = () => {
     );
   };
 
+  const getUsageProgressColor = () => {
+    const usagePercentage = (demoUser.apiUsed / demoUser.apiLimit) * 100;
+    if (usagePercentage >= 100) return "bg-red-500";
+    if (usagePercentage >= 90) return "bg-orange-500";
+    return "bg-blue-500";
+  };
+
+  const getTierIcon = () => {
+    if (demoUser.tier === "premium") {
+      return <Crown size={16} className="text-yellow-600" />;
+    }
+    return null;
+  };
+
+  const getTierBadge = () => {
+    if (demoUser.tier === "pro") {
+      return <Badge variant="secondary" className="text-xs">Pro</Badge>;
+    }
+    return null;
+  };
+
+  const getWatermark = () => {
+    if (demoUser.tier === "free") {
+      return (
+        <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-white/80 px-2 py-1 rounded">
+          Free Plan
+        </div>
+      );
+    }
+    return null;
+  };
+
   const handleLogout = async () => {
     await logout();
   };
@@ -467,14 +519,56 @@ const Dashboard = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center">
-            <Link
-              to="/dashboard"
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600"
-              title="Dashboard"
-            >
-              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
-            </Link>
+          <div className="flex items-center space-x-6">
+            {/* API Usage Block */}
+            <div className="flex flex-col space-y-1 min-w-0">
+              <div className="text-sm font-medium text-gray-900">
+                {demoUser.username ? `${demoUser.username}'s API Usage` : "Your API Usage"}
+              </div>
+              <div className="w-32 sm:w-40">
+                <Progress 
+                  value={(demoUser.apiUsed / demoUser.apiLimit) * 100} 
+                  className="h-2"
+                />
+                <div className={`h-full rounded-full transition-all ${getUsageProgressColor()}`} 
+                     style={{ width: `${(demoUser.apiUsed / demoUser.apiLimit) * 100}%` }} />
+              </div>
+              <div className="text-xs text-gray-600">
+                Usage: {demoUser.apiUsed}/{demoUser.apiLimit} API Calls
+              </div>
+            </div>
+
+            {/* VORP Brand with Tier Icon */}
+            <div className="flex items-center space-x-2">
+              {demoUser.tier === "premium" ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to="/dashboard"
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600 flex items-center space-x-2"
+                        title="Dashboard"
+                      >
+                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
+                        {getTierIcon()}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>You're on Premium</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Link
+                  to="/dashboard"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600 flex items-center space-x-2"
+                  title="Dashboard"
+                >
+                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
+                  {getTierIcon()}
+                </Link>
+              )}
+            </div>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -509,6 +603,30 @@ const Dashboard = () => {
           </div>
         </div>
       </header>
+
+      {/* Usage Limit Modal */}
+      <Dialog open={showUsageLimitModal} onOpenChange={setShowUsageLimitModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Usage Limit Reached</DialogTitle>
+            <DialogDescription>
+              You've reached your usage limit on the Free Plan. Upgrade to continue analyzing text and unlocking full vocabulary tools.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            <Button asChild className="flex-1">
+              <Link to="/pricing">Upgrade Now</Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowUsageLimitModal(false)}
+              className="flex-1"
+            >
+              Maybe Later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Main Content */}
       <main className="flex max-w-7xl mx-auto px-6 py-12 gap-6">
@@ -636,7 +754,10 @@ const Dashboard = () => {
         {/* Word Meaning Panel - Right Sidebar */}
         {showWordPanel && (
           <div className="fixed right-0 top-0 h-full w-80 bg-white border-l border-gray-200 shadow-lg z-40 overflow-y-auto animate-slide-in-right">
-            <div className="p-6 flex flex-col h-full">
+            <div className="p-6 flex flex-col h-full relative">
+              {/* Tier Watermark */}
+              {getWatermark()}
+              
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Word Meanings</h3>
                 <Button
@@ -693,9 +814,15 @@ const Dashboard = () => {
                 )}
               </div>
 
-              {/* Learn Selected Words Button */}
+              {/* Learn Selected Words Button with Tier Badge */}
               {pinnedTranslations.length > 0 && (
                 <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      Learn Selected Words
+                    </span>
+                    {getTierBadge()}
+                  </div>
                   <Button
                     onClick={handleLearnSelectedWords}
                     disabled={isLearning}
