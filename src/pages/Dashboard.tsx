@@ -26,6 +26,15 @@ interface PinnedTranslation {
   partOfSpeach?: string;
 }
 
+type UserTier = "free" | "pro" | "premium";
+
+interface User {
+  username: string;
+  tier: UserTier;
+  apiUsed: number;
+  apiLimit: number;
+}
+
 const Dashboard = () => {
   const [content, setContent] = useState("");
 
@@ -57,9 +66,9 @@ const Dashboard = () => {
   const [isLearning, setIsLearning] = useState(false);
 
   // Demo user data - replace with backend data later
-  const demoUser = {
+  const demoUser: User = {
     username: "DemoUser",
-    tier: "free" as const,
+    tier: "free", // Change this to "pro" or "premium" to test different tiers
     apiUsed: 30,
     apiLimit: 50,
   };
