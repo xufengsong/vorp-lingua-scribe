@@ -529,12 +529,12 @@ const Dashboard = () => {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-6">
-            {/* VORP Brand with Tier Icon */}
+            {/* VORP Brand with Tier Icon and API Usage Tooltip */}
             <div className="flex items-center space-x-2">
-              {demoUser.tier === "premium" ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {demoUser.tier === "premium" ? (
                       <Link
                         to="/dashboard"
                         className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600 flex items-center space-x-2"
@@ -543,22 +543,41 @@ const Dashboard = () => {
                         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
                         {getTierIcon()}
                       </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>You're on Premium</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ) : (
-                <Link
-                  to="/dashboard"
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600 flex items-center space-x-2"
-                  title="Dashboard"
-                >
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
-                  {getTierIcon()}
-                </Link>
-              )}
+                    ) : (
+                      <Link
+                        to="/dashboard"
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-cyan-600 flex items-center space-x-2"
+                        title="Dashboard"
+                      >
+                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">VORP</h1>
+                        {getTierIcon()}
+                      </Link>
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <div className="text-sm space-y-2">
+                      {demoUser.tier === "premium" ? (
+                        <div className="font-semibold">You're on Premium</div>
+                      ) : (
+                        <>
+                          <div className="font-semibold">
+                            {demoUser.username ? `${demoUser.username}'s API Usage` : "Your API Usage"}
+                          </div>
+                          <div className="w-32">
+                            <Progress 
+                              value={(demoUser.apiUsed / demoUser.apiLimit) * 100} 
+                              className="h-2"
+                            />
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            Usage: {demoUser.apiUsed}/{demoUser.apiLimit} API Calls
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           
