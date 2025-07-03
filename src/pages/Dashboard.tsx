@@ -529,24 +529,6 @@ const Dashboard = () => {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-6">
-            {/* API Usage Block */}
-            <div className="flex flex-col space-y-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">
-                {demoUser.username ? `${demoUser.username}'s API Usage` : "Your API Usage"}
-              </div>
-              <div className="w-32 sm:w-40">
-                <Progress 
-                  value={(demoUser.apiUsed / demoUser.apiLimit) * 100} 
-                  className="h-2"
-                />
-                <div className={`h-full rounded-full transition-all ${getUsageProgressColor()}`} 
-                     style={{ width: `${(demoUser.apiUsed / demoUser.apiLimit) * 100}%` }} />
-              </div>
-              <div className="text-xs text-gray-600">
-                Usage: {demoUser.apiUsed}/{demoUser.apiLimit} API Calls
-              </div>
-            </div>
-
             {/* VORP Brand with Tier Icon */}
             <div className="flex items-center space-x-2">
               {demoUser.tier === "premium" ? (
