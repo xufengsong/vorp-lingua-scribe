@@ -13,7 +13,7 @@ const plans = [
     description: "Perfect for getting started",
     features: [
       "Basic content analysis",
-      "5 analyses per day",
+      "8 analyses per day",
       "Community support",
       "Basic vocabulary tracking"
     ],
@@ -23,7 +23,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$25",
+    price: "$24",
     description: "Most popular for serious learners",
     features: [
       "Unlimited content analysis",
@@ -33,25 +33,24 @@ const plans = [
       "Custom learning paths",
       "Export learning materials"
     ],
-    buttonText: "Choose Pro",
-    popular: true,
+    buttonText: "Wait List",
+    popular: false,
     variant: "default" as const
   },
   {
     name: "Premium",
-    price: "$40",
+    price: "$39",
     description: "Complete language learning suite",
     features: [
       "Everything in Pro",
-      "1-on-1 tutoring sessions",
       "Advanced speech recognition",
       "Personalized curriculum",
       "Offline mode access",
       "Premium content library",
       "White-glove onboarding"
     ],
-    buttonText: "Choose Premium",
-    popular: false,
+    buttonText: "Wait List",
+    popular: true,
     variant: "default" as const
   }
 ];
