@@ -23,83 +23,8 @@ const Settings = () => {
     profilePicture: null as File | null
   });
 
-  // Fetch user profile data when the component mounts
-  // useEffect(() => {
-  //   const fetchProfileData = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       // You'll likely need to send a token for authentication
-  //       const token = localStorage.getItem('authToken'); // Example: get token from local storage
-  //       if (!token) {
-  //         navigate("/login");
-  //         return;
-  //       }
-
-  //       const response = await fetch('http://127.0.0.1:8000/api/user_profile_view/', {
-  //         method: 'GET', // Typically, you use GET to retrieve data
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': `Bearer ${token}`, // Send the token for authentication
-  //         },
-  //       });
-
-  //       const data = await response.json();
-
-  //       if (response.ok) {
-  //         console.log("Success:", data);
-  //         setProfileData({
-  //           ...profileData,
-  //           username: data.username,
-  //           email: data.email,
-  //         });
-  //       } else {
-  //         console.error("Error:", data);
-  //         // Handle error, e.g., show a toast message
-  //         toast({
-  //           title: "Error",
-  //           description: "Failed to fetch profile data.",
-  //           variant: "destructive",
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error('There was an error sending the request!', error);
-  //       toast({
-  //           title: "Error",
-  //           description: "An unexpected error occurred.",
-  //           variant: "destructive",
-  //       });
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchProfileData();
-  // }, [navigate, toast]); // Dependencies for the useEffect hook
-
-
-    // useEffect(() => {
-    //   const checkUserSession = async () => {
-    //     try {
-    //       // 2. USE AXIOS: Switched from fetch to axiosInstance. It automatically includes credentials.
-    //       const response = await axiosInstance.get('/api/user_profile_view/');
-    //       // For axios, the response data is in the `data` property.
-    //       setUser(response.data);
-    //     } catch (error) {
-    //       // Axios automatically throws an error for non-2xx responses (like 401),
-    //       // so we just need to catch it.
-    //       console.error("No active session found.", error);
-    //       setUser(null);
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   };
-  
-    //   checkUserSession();
-    // }, []);
-
-
-
-
+  // console.log(user) // an object
+  // console.log(user.username)
   // Mock learning data
   const learningStats = {
     recentContent: [
@@ -108,7 +33,7 @@ const Settings = () => {
       { title: "German Podcast: Technology Trends", date: "3 days ago", type: "Audio" }
     ],
     totalHours: 47,
-    vocabularyWords: 1247
+    vocabularyWords: user.unknown_words.length
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {

@@ -8,10 +8,10 @@ interface User {
   username: string;
   email: string;
   // Add any other fields you get from your API
-  kownwords?: string[];
+  unknown_words?: string[];
   motherLanguage?: string,
   targetLanguage?: string,
-  fluncyLevel?: string,
+  fluencyLevel?: string,
 }
 
 // Define what the context will provide
