@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Pricing from "./pages/Pricing";
 import Payment from "./pages/Payment";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ui/ProtectedRoute"
 
@@ -32,6 +34,8 @@ const App = () => (
           </Route>
 
           <Route path="/pricing" element={<Pricing />} /> 
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/" element={<Login /> } /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
